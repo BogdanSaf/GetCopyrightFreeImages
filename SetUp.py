@@ -18,7 +18,7 @@ class SetUp:
 
         self.AskWebsite()
         self.AskFolder()
-        temp = APICall(self.key, self.website, self.folder)
+        APICall(self.key, self.website, self.folder)
 
     def AskWebsite(self):
         print("Select a website to download from:")
@@ -37,11 +37,11 @@ class SetUp:
 
     def AskFolder(self):
 
-        folder = input("Enter a folder to save to: ")
-        if not os.path.exists(folder):
+        folder = input("Enter a folder to save to (This folder/s will be located inside the images one): ")
+        if not os.path.exists("images/" + folder):
             print(f"Folder does not exist, creating {folder} folder...")
-            os.makedirs(folder)
+            os.makedirs("images/" + folder)
             print("Folder created")
-            self.folder = folder
+            self.folder = "images/" + folder
         else:
-            self.folder = folder
+            self.folder = "images/" + folder

@@ -31,13 +31,21 @@ class APICall:
                     print("Error: " + str(self.get_status()))
                     exit()
             case "Pexels":
-                params = Pexels().get_params()
-                headers = Pexels().get_header(self.apiKey)
-                print(headers['Authorization'])
+                pexels = Pexels()
+                params = pexels.get_params()
+                headers = pexels.get_header(self.apiKey)
+                requestedPages = pexels.get_requestedPages()
                 self.apiCall(params, headers, self.website)
 
+                # get rate limit
+                if self.response.headers['X-Ratelimit-Remaining'] == '0':
+                    print("Error: Rate limit exceeded. Please try again later.")
+                    print("Rate limit will reset at: " + self.response.headers['X-Ratelimit-Reset'])
+
+                print("Rate limit remaining: " + self.response.headers['X-Ratelimit-Remaining'])
+
                 if self.get_status() == 200:
-                    Pexels().downloadImages(self.key, self.folder, self.get_json())
+                    Pexels().getPages(self.key, self.folder, self.get_json(), requestedPages, params, headers)
                 else:
                     print("Error: " + str(self.get_status()))
                     exit()
