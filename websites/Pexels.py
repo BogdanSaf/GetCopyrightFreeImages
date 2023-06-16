@@ -46,7 +46,6 @@ class Pexels:
         return self.headers
 
     def downloadImages(self, key, folder, JSON_File):
-        self.folder = folder
         opener = urllib.request.build_opener()
         opener.addheaders = [('Authorization', key)]
         urllib.request.install_opener(opener)
@@ -68,7 +67,7 @@ class Pexels:
                                        folder + "/ (Pexels)_" + description + "uploaded by " + uploadedBy + "."
                                        + imageType)
 
-    def getPages(self, key, folder, JSON_File, requestedPages, params, headers):
+    def startDownload(self, key, folder, JSON_File, requestedPages, params, headers):
 
         currentPages = 1
 
@@ -85,7 +84,7 @@ class Pexels:
                 self.requestedPages = totalPages
             elif answer == "n":
                 requestedPages = int(input("Enter how many pages do you want to download: "))
-                self.checkPagesLeft(key, folder, JSON_File, requestedPages, params)
+                self.startDownload(key, folder, JSON_File, requestedPages, params, headers)
 
         print("Total pages: " + str(totalPages) + " Requested pages: " + str(requestedPages))
 

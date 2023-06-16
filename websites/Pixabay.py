@@ -1,24 +1,19 @@
 import urllib
+from math import floor
 from urllib import request
 import requests as req
 
 
-class Unsplash:
-
-    def __init__(self, ):
+class Pixabay:
+    def __init__(self):
+        self.folder = None
+        self.headers = None
         self.params = None
-        self.requestedPages = None
-
-    def get_header(self):
-        headers = {
-            'User-Agent': 'student-project/1.0',
-            'Content-Type': 'application/json'
-        }
-        return headers
+        self.requestedPages = 0
 
     def get_params(self, APIKey):
         inputTags = input("Enter tags to search for (add spaces between them): ")
-        userTags = {"query": f"{inputTags}"}
+        userTags = {"q": f"{inputTags}"}
 
         limit = input("Enter how many images you want to download per page (the higher the more time it will spend "
                       "per page): ")
@@ -28,31 +23,41 @@ class Unsplash:
 
         userPages = {"page": 1}
 
-        userAPI = {"client_id": f"{APIKey}"}
+        userAPI = {"key": f"{APIKey}"}
 
-        self.params = {**userAPI, **userTags, **userLimit, **userPages}
+        self.params = {**userAPI, **userTags, **userPages, **userLimit}
         return self.params
 
     def get_requestedPages(self):
         return self.requestedPages
 
-    def downloadImages(self, key, folder, JSON_File):
-        for images in JSON_File['results']:
+    def get_header(self):
+        self.headers = {
+            'User-Agent': 'student-project/1.0',
+            'Content-Type': 'application/json'
+        }
+        return self.headers
 
-            if images['alt_description'] is None:
+    def downloadImages(self, key, folder, JSON_File):
+        opener = urllib.request.build_opener()
+        opener.addheaders = [('User-Agent', 'student-project/1.0')]
+        urllib.request.install_opener(opener)
+        for images in JSON_File['hits']:
+
+            if images['tags'] is None:
                 description = "No description"
             else:
-                description = images['alt_description']
+                description = images['tags']
 
-            url = images['urls']['full']
+            url = images['largeImageURL']
 
-            uploadedBy = images['user']['name']
+            uploadedBy = images['user']
 
-            imageType = images['urls']['full'].split('.')[-1]
+            imageType = images['largeImageURL'].split('.')[-1]
 
             print("Downloading image: " + description + " uploaded by " + uploadedBy + " from " + key + "...")
             urllib.request.urlretrieve(url,
-                                       folder + "/ (Unsplash)_" + description + "uploaded by " + uploadedBy + "."
+                                       folder + "/ (Pixabay)_" + description + "uploaded by " + uploadedBy + "."
                                        + imageType)
 
     def startDownload(self, key, folder, JSON_File, requestedPages, params, headers):
@@ -60,7 +65,7 @@ class Unsplash:
 
         requestedPages = int(requestedPages)
         params = params
-        totalPages = JSON_File['total_pages']
+        totalPages = floor(JSON_File['totalHits'] / int(params['per_page']))
 
         if requestedPages > totalPages:
             print("You requested more pages than there are, setting it to the max amount of pages")
@@ -79,6 +84,6 @@ class Unsplash:
             client = req.Session()
             client.headers.update(headers)
             params['page'] = currentPages
-            response = client.get("https://api.unsplash.com/search/photos?", headers=headers, params=params)
-            self.downloadImages("Unsplash", folder, response.json())
+            response = client.get("https://pixabay.com/api/", headers=headers, params=params)
+            self.downloadImages("Pixabay", folder, response.json())
             currentPages += 1

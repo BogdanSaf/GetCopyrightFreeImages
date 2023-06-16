@@ -5,6 +5,7 @@ from APICall import APICall
 website = {
     "Unsplash": "https://api.unsplash.com/search/photos?",
     "Pexels": "https://api.pexels.com/v1/search?",
+    "Pixabay": "https://pixabay.com/api/?"
 }
 
 websiteList = list(website.keys())

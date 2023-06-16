@@ -6,6 +6,7 @@ import requests as req
 from APIKey import APIKey
 from websites.Pexels import Pexels
 from websites.Unsplash import Unsplash
+from websites.Pixabay import Pixabay
 
 
 class APICall:
@@ -21,15 +22,18 @@ class APICall:
     def choseWebsite(self):
         match self.key:
             case "Unsplash":
-                params = Unsplash().get_params(self.apiKey)
-                headers = Unsplash().get_header()
+                unsplash = Unsplash()
+                params = unsplash.get_params(self.apiKey)
+                headers = unsplash.get_header()
+                requestedPages = unsplash.get_requestedPages()
                 self.apiCall(params, headers, self.website)
 
                 if self.get_status() == 200:
-                    Unsplash().downloadImages(self.key, self.folder, self.get_json())
+                    Unsplash().startDownload(self.key, self.folder, self.get_json(), requestedPages, params, headers)
                 else:
                     print("Error: " + str(self.get_status()))
                     exit()
+
             case "Pexels":
                 pexels = Pexels()
                 params = pexels.get_params()
@@ -40,15 +44,29 @@ class APICall:
                 # get rate limit
                 if self.response.headers['X-Ratelimit-Remaining'] == '0':
                     print("Error: Rate limit exceeded. Please try again later.")
-                    print("Rate limit will reset at: " + self.response.headers['X-Ratelimit-Reset'])
+                    print("Rate limit will reset in: " + self.response.headers['X-Ratelimit-Reset'])
 
                 print("Rate limit remaining: " + self.response.headers['X-Ratelimit-Remaining'])
 
                 if self.get_status() == 200:
-                    Pexels().getPages(self.key, self.folder, self.get_json(), requestedPages, params, headers)
+                    Pexels().startDownload(self.key, self.folder, self.get_json(), requestedPages, params, headers)
                 else:
                     print("Error: " + str(self.get_status()))
                     exit()
+
+            case "Pixabay":
+                pixabay = Pixabay()
+                params = pixabay.get_params(self.apiKey)
+                headers = pixabay.get_header()
+                requestedPages = pixabay.get_requestedPages()
+                self.apiCall(params, headers, self.website)
+
+                if self.get_status() == 200:
+                    Pixabay().startDownload(self.key, self.folder, self.get_json(), requestedPages, params, headers)
+                else:
+                    print("Error: " + str(self.get_status()))
+                    exit()
+
             case _:
                 print(f"Error: Invalid website. Looks like we don't support {self.key} yet.")
                 exit()
