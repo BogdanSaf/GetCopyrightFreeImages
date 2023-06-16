@@ -29,7 +29,7 @@ class SetUp:
             i += 1
         choice = int(input("Enter a number: "))
 
-        if choice > len(websiteList) or choice < 0:
+        if choice > len(websiteList) - 1 or choice < 0:
             print("Invalid choice")
             self.AskWebsite()
         else:
