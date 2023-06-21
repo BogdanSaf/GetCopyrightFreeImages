@@ -7,7 +7,3 @@ Supported websites:
 - Pixabay
 
 You will need to have python, pip and requests installed. 
-
-# Known Problems
-
-Images downloaded from unspash will not work on windows!
