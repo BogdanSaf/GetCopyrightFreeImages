@@ -53,7 +53,7 @@ class Unsplash:
             print("Downloading image: " + description + " uploaded by " + uploadedBy + " from " + key + "...")
             urllib.request.urlretrieve(url,
                                        folder + "/ (Unsplash)_" + description + "uploaded by " + uploadedBy + "."
-                                       + imageType)
+                                       + "jpg")
 
     def startDownload(self, key, folder, JSON_File, requestedPages, params, headers):
         currentPages = 1
